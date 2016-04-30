@@ -30,6 +30,8 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 
+import net.sf.keystore_explorer.JavaCardCommunication.CardMngr;
+import net.sf.keystore_explorer.JavaCardCommunication.SimpleApplet;
 import net.sf.keystore_explorer.crypto.Password;
 import net.sf.keystore_explorer.crypto.keystore.KeyStoreUtil;
 import net.sf.keystore_explorer.gui.CurrentDirectory;
@@ -38,12 +40,26 @@ import net.sf.keystore_explorer.gui.KseFrame;
 import net.sf.keystore_explorer.gui.error.DError;
 import net.sf.keystore_explorer.utilities.history.KeyStoreHistory;
 import net.sf.keystore_explorer.utilities.history.KeyStoreState;
+import net.sf.keystore_explorer.JavaCardCommunication.CardMngr;
+
 
 /**
  * Action to save KeyStore as.
  *
  */
 public class SaveAsAction extends KeyStoreExplorerAction {
+
+
+	private static byte APPLET_AID[] = {(byte) 0x4C, (byte) 0x61, (byte) 0x62, (byte) 0x61, (byte) 0x6B,
+			(byte) 0x41, (byte) 0x70, (byte) 0x70, (byte) 0x6C, (byte) 0x65, (byte) 0x74};
+	private static byte SELECT_SIMPLEAPPLET[] = {(byte) 0x00, (byte) 0xa4, (byte) 0x04, (byte) 0x00, (byte) 0x0b,
+			(byte) 0x4C, (byte) 0x61, (byte) 0x62, (byte) 0x61, (byte) 0x6B,
+			(byte) 0x41, (byte) 0x70, (byte) 0x70, (byte) 0x6C, (byte) 0x65, (byte) 0x74};
+
+	private final byte selectCM[] = {
+			(byte) 0x00, (byte) 0xa4, (byte) 0x04, (byte) 0x00, (byte) 0x07, (byte) 0xa0, (byte) 0x00, (byte) 0x00,
+			(byte) 0x00, (byte) 0x18, (byte) 0x43, (byte) 0x4d};
+
 	/**
 	 * Construct action.
 	 *
@@ -87,6 +103,22 @@ public class SaveAsAction extends KeyStoreExplorerAction {
 
 		try {
 			KeyStoreState currentState = history.getCurrentState();
+
+			CardMngr cardManager = new CardMngr();
+			byte[] installData = new byte[10]; // no special install data passed now - can be used to pass initial keys etc.
+			cardManager.prepareLocalSimulatorApplet(APPLET_AID, installData, SimpleApplet.class);
+
+			// TODO: prepare proper APDU command
+			short additionalDataLen = 0;
+			byte apdu[] = new byte[CardMngr.HEADER_LENGTH + additionalDataLen];
+			apdu[CardMngr.OFFSET_CLA] = (byte) 0x00;
+			apdu[CardMngr.OFFSET_INS] = (byte) 0x00;
+			apdu[CardMngr.OFFSET_P1] = (byte) 0x00;
+			apdu[CardMngr.OFFSET_P2] = (byte) 0x00;
+			apdu[CardMngr.OFFSET_LC] = (byte) additionalDataLen;
+
+
+			byte[] response = cardManager.sendAPDUSimulator(apdu);
 
 			Password password = currentState.getPassword();
 
