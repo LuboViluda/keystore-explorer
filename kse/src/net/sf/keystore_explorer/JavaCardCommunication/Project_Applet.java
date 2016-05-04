@@ -15,7 +15,6 @@ import javacardx.crypto.Cipher;
 
 import javacard.framework.ISOException;
 import javacard.framework.JCSystem;
-import javacard.security.RSAPrivateKey;
 import javacard.framework.Util;
 
 
@@ -32,17 +31,7 @@ public class Project_Applet extends javacard.framework.Applet
     final static byte INS_SET_PASSWD                    = (byte) 0x60;
 
 
-    public final static byte INS_INIT = (byte) 0x10;
-    public final static byte INS_GET = (byte) 0x11;
-    public final static byte INS_SET = (byte) 0x12;
-    public final static byte INS_FINAL = (byte) 0x1F;
     public final static byte INS_TEST = (byte) 0x20;
-    public final static byte P1_Y = (byte) 0x01;
-    public final static byte P1_P = (byte) 0x02;
-    public final static byte P1_G = (byte) 0x03;
-    public final static byte P1_INIT_WITH_PRIVKEY = (byte) 0x1F;
-    public final static byte BLANK = (byte) 0x00;
-
     final static short SW_BAD_PIN                    = (short) 0x6900;
     final static short SW_PIN_NOT_VERIFIED           = (short) 0x6982;
     final static short SW_CARD_BLOCKED               = (short) 0x6983;
@@ -65,7 +54,6 @@ public class Project_Applet extends javacard.framework.Applet
     private byte[] key = JCSystem.makeTransientByteArray((short) 16, JCSystem.CLEAR_ON_DESELECT);
 
     private   byte           m_ramArray[] = null;  // TEMPORARRY ARRAY IN RAM
-    private   short          set_key = (short) 0;
     private   AESKey         m_aesKey = null;
     private   Cipher         m_encryptCipher_CBC = null;
     private   Cipher         m_decryptCipher_CBC = null;
@@ -76,7 +64,7 @@ public class Project_Applet extends javacard.framework.Applet
             (byte) 0x20, (byte) 0x43, (byte) 0x61, (byte) 0x72, (byte) 0x64, (byte) 0x2e};
 
     /**
-     * LabakApplet default constructor
+     *
      * Only this class's install method should create the applet object.
      * @param buffer
      * @param offset
