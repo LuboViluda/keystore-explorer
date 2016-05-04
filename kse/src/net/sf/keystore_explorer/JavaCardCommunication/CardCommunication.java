@@ -77,7 +77,8 @@ public class CardCommunication {
     final static byte NEW_KEY                           = (byte) 0x00;
     final static byte KEY_RETR                          = (byte) 0x01;
 
-    public static byte[] encrypt(byte[] plainText, byte[] encKey) throws Exception
+    // encryption
+    private static byte[] encrypt(byte[] plainText, byte[] encKey) throws Exception
     {
         Key key = new SecretKeySpec(encKey, "AES");
         Cipher chiper = Cipher.getInstance("AES/ECB/NoPadding");
@@ -85,8 +86,9 @@ public class CardCommunication {
         byte[] encVal = chiper.doFinal(plainText);
         return encVal;
     }
-    // Performs decryption
-    public static byte[] decrypt(byte[] encryptedText, byte[] decKey) throws Exception
+
+    // decryption
+    private static byte[] decrypt(byte[] encryptedText, byte[] decKey) throws Exception
     {
         Key key = new SecretKeySpec(decKey, "AES");
         Cipher chiper = Cipher.getInstance("AES/ECB/NoPadding");
@@ -173,10 +175,6 @@ public class CardCommunication {
         System.arraycopy(apdu_header, 0, apdu_VerifyPIN, 0, apdu_header.length);
         System.arraycopy(encPIN, 0, apdu_VerifyPIN, apdu_header.length, encPIN.length);
 
-//                 byte apdu_VerifyPIN[]={CLA_AUTHAPPLET,INS_VERIFYPIN,(byte) 0x00,(byte) 0x00,(byte) 0x10,
-//                     (byte) 0x30,(byte) 0x31,(byte) 0x30,(byte) 0x31, (byte) 0x00,(byte) 0x00,(byte) 0x00,(byte) 0x00,
-//               (byte) 0x00,(byte) 0x00,(byte) 0x00,(byte) 0x00,(byte) 0x00,(byte) 0x00,(byte) 0x00,(byte) 0x00};
-
         byte[] resp2 = new byte[0];
         try {
             resp2 = cardManager.sendAPDUSimulator(apdu_VerifyPIN);
@@ -195,6 +193,14 @@ public class CardCommunication {
             System.out.println("!!!PIN authentication failed with error code "+ cardManager.bytesToHex(resp2));
     }
 
+
+    /**
+     * set preshared password to the card, it should be done in TRUSTED enviroment
+     *
+     *
+     * @param password preshared password
+     * @param pin pin, should be same as pin setted in card, otherwise mechanism doesn't work
+     */
 
     static public void setPasswordToCard(String password, byte[] pin) {
         prepareCardManager();

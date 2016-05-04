@@ -27,7 +27,7 @@ public class Project_Applet extends javacard.framework.Applet
     final static byte INS_VERIFYPIN                     = (byte) 0x55;
     final static byte INS_SETPIN                        = (byte) 0x56;
     final static byte INS_GEN_RET_KEY                   = (byte) 0x57;
-    final static byte INS_INIT_SEC_CHANNEL              = (byte) 0x58;      //  provided unkown part from app
+    final static byte INS_INIT_SEC_CHANNEL              = (byte) 0x58;
     final static byte INS_SET_PASSWD                    = (byte) 0x60;
 
 
@@ -77,16 +77,13 @@ public class Project_Applet extends javacard.framework.Applet
         m_password = new byte[32];
         m_secureRandom = RandomData.getInstance(RandomData.ALG_SECURE_RANDOM);
         m_password = new byte[32];
-        // hardcoded password TODO change
-        Util.arrayCopy(m_password, (short) 0, "12341234".getBytes(), (short) 0, (short) 8);
 
         // CREATE AES KEY OBJECT
         m_aesKey = (AESKey) KeyBuilder.buildKey(KeyBuilder.TYPE_AES, KeyBuilder.LENGTH_AES_128, false);
         // CREATE OBJECTS FOR CBC CIPHERING
         m_encryptCipher_CBC = Cipher.getInstance(Cipher.ALG_AES_BLOCK_128_ECB_NOPAD, false);
         m_decryptCipher_CBC = Cipher.getInstance(Cipher.ALG_AES_BLOCK_128_ECB_NOPAD, false);
-//        m_encryptCipher_CBC = Cipher.getInstance(Cipher.ALG_AES_BLOCK_128_CBC_NOPAD, false);
-//        m_decryptCipher_CBC = Cipher.getInstance(Cipher.ALG_AES_BLOCK_128_CBC_NOPAD, false);
+
 
         //  TEMPORARY BUFFER USED FOR FAST OPERATION WITH MEMORY LOCATED IN RAM
         m_ramArray = new byte[260];
@@ -193,14 +190,12 @@ public class Project_Applet extends javacard.framework.Applet
         if (m_pin.getTriesRemaining() > (byte)0){    /// Check if card is blocked
             ///Enc decrypt//////////////////////////////
             m_aesKey.setKey(key, (short) 0);
-            // m_encryptCipher_CBC.init(m_aesKey, Cipher.MODE_ENCRYPT);
+
             m_decryptCipher_CBC.init(m_aesKey, Cipher.MODE_DECRYPT);
 
-            //  m_encryptCipher_CBC.doFinal(apdubuf, ISO7816.OFFSET_CDATA, dataLen, m_ramArray, (short) 0);
             m_decryptCipher_CBC.doFinal(apdubuf, ISO7816.OFFSET_CDATA, dataLen, m_ramArray, (short) 0);
             Util.arrayCopyNonAtomic(m_ramArray, (short) 0, apdubuf, ISO7816.OFFSET_CDATA, dataLen);
-//     apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, dataLen);
-            ////////////////////////////////////////////////////
+
             if (m_pin.check(apdubuf, ISO7816.OFFSET_CDATA, (byte) 4) == false) // VERIFY PIN
                 ISOException.throwIt(SW_BAD_PIN);
         }
