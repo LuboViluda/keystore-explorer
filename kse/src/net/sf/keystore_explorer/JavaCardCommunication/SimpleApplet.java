@@ -171,9 +171,7 @@ public class SimpleApplet extends javacard.framework.Applet
      */
     public void deselect()
     {
-
         // <PUT YOUR DESELECTION ACTION HERE>
-
         return;
     }
 

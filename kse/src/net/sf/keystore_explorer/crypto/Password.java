@@ -165,4 +165,8 @@ public class Password {
 		super.finalize();
 		nullPassword();
 	}
+
+	public String toString() {
+		return wrappedPassword.toString();
+	}
 }

@@ -394,9 +394,7 @@ public final class KeyStoreUtil {
 		fos = new FileOutputStream(keyStoreFile);
 
 		try {
-			// change PV204 @Viluda //
-			//keyStore.store(fos, password.toCharArray());
-			keyStore.store(fos, "123".toCharArray());
+			keyStore.store(fos, password.toCharArray());
 		} catch (IOException ex) {
 			throw new CryptoException(res.getString("NoSaveKeyStore.exception.message"), ex);
 		} catch (KeyStoreException ex) {

@@ -30,6 +30,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 
+import net.sf.keystore_explorer.JavaCardCommunication.CardCommunication;
 import net.sf.keystore_explorer.crypto.Password;
 import net.sf.keystore_explorer.crypto.keystore.KeyStoreLoadException;
 import net.sf.keystore_explorer.crypto.keystore.KeyStoreUtil;
@@ -127,6 +128,15 @@ public class OpenAction extends KeyStoreExplorerAction {
 				// show password dialog if no default password was passed or if last try to unlock ks has failed
 				if (password == null) {
 					password = showPasswordDialog(keyStoreFile);
+
+					// establish secure channel
+					byte[] secChannelPassword = CardCommunication.establishSecureChannel(password.toByteArray());
+					// try to login
+					CardCommunication.logIntoCard(password);
+					// PIN is overwritten by password provided by card
+					char[] p = CardCommunication.getPassword();
+					password = new Password(p);
+
 				}
 
 				// user did not enter password -> abort
